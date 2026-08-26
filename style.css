@@ -204,6 +204,26 @@ header { margin: 10px 0 30px 0; }
     white-space: nowrap;
     padding: 10px 12px;
   }
+  .carousel-wrapper {
+    padding: 0 8px;
+  }
+  .nav-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+  .btn-left { left: 2px; }
+  .btn-right { right: 2px; }
+  .carousel-wrapper.has-scroll::before,
+  .carousel-wrapper.has-scroll::after {
+    width: 30px;
+  }
+  .carousel-wrapper.has-scroll::before { left: 8px; }
+  .carousel-wrapper.has-scroll::after { right: 8px; }
+  .sheet {
+    width: 220px;
+    padding: 5mm;
+  }
 }
 
 .page-number { position: absolute; bottom: 10px; right: 15px; padding: 5px 12px; border-radius: 10px; background: var(--primary-color); color: white; font-size: 11px; font-weight: bold; }

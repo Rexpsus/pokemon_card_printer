@@ -62,6 +62,9 @@ new Sortable(document.getElementById('preview'), {
   animation: 200,
   ghostClass: 'sortable-ghost',
   dragClass: 'sortable-drag',
+  delay: 300,
+  delayOnTouchOnly: true,
+  touchStartThreshold: 5,
   onEnd: () => {
     const ids = Array.from(document.getElementById('preview').children).map(el => el.dataset.id);
     const sorted = [...getFilesArray()].sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
