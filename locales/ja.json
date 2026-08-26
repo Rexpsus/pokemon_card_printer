@@ -1,0 +1,28 @@
+{
+  "title.page": "カード印刷レイアウトツール",
+  "title.sortTip": "↔️ カードをドラッグして並び替え",
+
+  "common.button.deckReference": "📖 デッキ参考",
+  "common.button.fetchDeck": "デッキ取得",
+  "common.button.print": "🖨️ 今すぐ印刷 (A4)",
+  "common.button.clearAll": "🗑️ 全カードを削除",
+  "common.label.upload": "📂 クリックまたは画像をドラッグ",
+  "common.placeholder.deckUrl": "日本公式サイトのデッキURLを貼り付け (https://www.pokemon-card.com/deck/result.html/deckID/...)",
+  "common.loading": "読み込み中...",
+
+  "action.delete": "削除",
+  "action.zoom": "拡大",
+  "action.confirmClear": "すべてのカードを削除してもよろしいですか？",
+
+  "error.rejectedItems": "{0}枚のカードを読み込めません：データ形式エラー",
+  "error.network": "ネットワークエラー: {0}",
+  "error.noCardsFound": "カード情報が見つかりませんでした。",
+  "error.fetch": "エラーが発生しました。詳細はConsoleをご覧ください",
+  "error.imageLoad": "画像読み込みエラー",
+  "error.enterUrl": "URLを入力してください！",
+
+  "info.wasteAlert": "💡 <b>用紙の活用ヒント：</b> 最後のページは{0}枚のみ。{1}枚追加してお埋めください。",
+  "info.notEnoughCards": "⚠️ 注意：{0}枚しか取得できていません。60枚未満です！",
+
+  "ui.pageNumber": "第 {0} ページ"
+}

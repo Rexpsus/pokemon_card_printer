@@ -4,10 +4,19 @@ import { closeLightbox } from './lightbox.js';
 import { fetchDeckData } from './deckFetcher.js';
 import { handleFiles } from './preview.js';
 import { scrollAnimate, setupNav } from './carousel.js';
+import { initI18n, setLanguage, t } from './i18n.js';
 
 // 按鈕圖示旋轉
 document.querySelector('.btn-left .btn-icon').style.transform = 'rotate(-90deg)';
 document.querySelector('.btn-right .btn-icon').style.transform = 'rotate(90deg)';
+
+// i18n 初始化（恢復語言偏好、套用翻譯）
+await initI18n();
+
+// 語言切換 — 下拉選單
+document.getElementById('langSelect').onchange = (e) => {
+  setLanguage(e.target.value);
+};
 
 // 深色模式初始化
 if (localStorage.getItem('card-theme') === 'dark') {
@@ -70,7 +79,7 @@ window.onscroll = () => {
 
 // 清空所有卡片
 document.getElementById('clearAllBtn').onclick = () => {
-  if (confirm("確定清空所有卡片嗎？")) {
+  if (confirm(t('action.confirmClear'))) {
     getFilesArray().forEach(f => { if (f.url.startsWith('blob:')) URL.revokeObjectURL(f.url); });
     Array.from(document.getElementById('preview').children).forEach(child => child.classList.add('removing'));
     setTimeout(() => { setFilesArray([]); }, 300);

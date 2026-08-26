@@ -2,9 +2,13 @@
 import { getFilesArray, addFiles, updateQuantity, removeFile, getAndClearRejectedItems, subscribe } from './state.js';
 import { openLightbox } from './lightbox.js';
 import { generateCarousel } from './carousel.js';
+import { t } from './i18n.js';
 
 // 訂閱狀態變更，自動重新渲染
 subscribe(() => { renderPreview(); });
+
+// 語言切換時重新渲染（動態 DOM 文字重新產生）
+window.addEventListener('languagechange', () => { renderPreview(); });
 
 export function showToast(message, type = 'info', duration = 5000) {
   const container = document.getElementById('toast-container');
@@ -28,7 +32,7 @@ export function renderPreview() {
   // 檢查上次 setFilesArray 是否有被過濾的無效項目，若有則顯示 toast 錯誤提示
   const rejected = getAndClearRejectedItems();
   if (rejected.length > 0) {
-    showToast(`無法載入 ${rejected.length} 個卡片項目：資料格式錯誤`, 'error', 8000);
+    showToast(t('error.rejectedItems', rejected.length), 'error', 8000);
   }
 
   const container = document.getElementById('preview');
@@ -53,9 +57,9 @@ export function renderPreview() {
       el.className = 'preview-item';
       el.dataset.id = file.id;
       el.innerHTML = `
-        <button class="remove-btn" title="刪除">✕</button>
-        <button class="zoom-btn" title="放大">⛶</button>
-        <img src="${file.url}" style="width:100%;height:100%;object-fit:cover;pointer-events:none;" onerror="this.src='https://via.placeholder.com/140x196?text=Image+Error'">
+        <button class="remove-btn" title="${t('action.delete')}">✕</button>
+        <button class="zoom-btn" title="${t('action.zoom')}">⛶</button>
+        <img src="${file.url}" style="width:100%;height:100%;object-fit:cover;pointer-events:none;" onerror="this.src='https://via.placeholder.com/140x196?text=${encodeURIComponent(t('error.imageLoad'))}'">
         <div class="qty-overlay">
           <div class="qty-group">
             <button class="qty-btn" data-dir="-1">-</button>
@@ -109,7 +113,7 @@ export function refreshStatus() {
   const rem = total % 9;
   const alert = document.getElementById('alert-wrapper');
   if (total > 0 && rem !== 0) {
-    document.getElementById('waste-alert').innerHTML = `💡 <b>紙張利用提醒：</b> 最後一頁只有 ${rem} 張卡片，建議補 ${9 - rem} 張卡片填滿紙張。`;
+    document.getElementById('waste-alert').innerHTML = t('info.wasteAlert', rem, 9 - rem);
     alert.classList.add('active');
   } else alert.classList.remove('active');
   generateCarousel();

@@ -1,5 +1,6 @@
 // 輪播與列印預覽
 import { getFilesArray, scrollX, setScrollX, isAccelerating, setIsAccelerating, loopWidth, setLoopWidth, isHovering } from './state.js';
+import { t } from './i18n.js';
 
 export function generateCarousel() {
   const area = document.getElementById('printArea');
@@ -13,7 +14,7 @@ export function generateCarousel() {
   const createSheet = (idx) => {
     const s = document.createElement('div'); s.className = 'sheet';
     all.slice(idx * 9, (idx + 1) * 9).forEach(url => { s.innerHTML += `<div class="card"><img src="${url}"></div>`; });
-    s.innerHTML += `<div class="page-number">第 ${(idx % pagesCount) + 1} 頁</div>`;
+    s.innerHTML += `<div class="page-number">${t('ui.pageNumber', (idx % pagesCount) + 1)}</div>`;
     return s;
   };
   for(let i=0; i<pagesCount; i++) area.appendChild(createSheet(i));

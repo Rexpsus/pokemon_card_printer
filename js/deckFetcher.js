@@ -1,16 +1,17 @@
 // 日本官網牌組抓取
 import { setFilesArray } from './state.js';
+import { t } from './i18n.js';
 
 export async function fetchDeckData() {
   const urlInput = document.getElementById('deckUrl').value.trim();
   const fetchBtn = document.getElementById('fetchBtn');
-  if (!urlInput) { alert("請輸入網址！"); return; }
-  fetchBtn.innerText = "讀取中...";
+  if (!urlInput) { alert(t('error.enterUrl')); return; }
+  fetchBtn.innerText = t('common.loading');
   fetchBtn.disabled = true;
 
   try {
     const response = await fetch(urlInput);
-    if (!response.ok) throw new Error(`網路回應不正常: ${response.status}`);
+    if (!response.ok) throw new Error(t('error.network', response.status));
     const htmlText = await response.text();
     const imgMap = {};
     const imgRegex = /searchItemCardPict\[(\d+)\]\s*=\s*'([^']+)';/g;
@@ -50,17 +51,17 @@ export async function fetchDeckData() {
     });
 
     if (totalImportedSpecies === 0) {
-      alert("無法在網頁中找到任何卡片資訊。");
+      alert(t('error.noCardsFound'));
     } else {
       setFilesArray(newCards);
-      if (totalCardsSum < 60) alert(`⚠️ 注意：此牌組僅抓取到 ${totalCardsSum} 張卡片，不足 60 張！`);
+      if (totalCardsSum < 60) alert(t('info.notEnoughCards', totalCardsSum));
       document.getElementById('preview').scrollIntoView({ behavior: 'smooth' });
     }
   } catch (error) {
     console.error('fetchDeckData 錯誤:', error);
-    alert("發生錯誤，詳情請見 Console");
+    alert(t('error.fetch'));
   } finally {
-    fetchBtn.innerText = "抓取牌組";
+    fetchBtn.innerText = t('common.button.fetchDeck');
     fetchBtn.disabled = false;
   }
 }
