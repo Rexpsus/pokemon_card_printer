@@ -1,0 +1,28 @@
+{
+  "title.page": "卡片列印排版工具",
+  "title.sortTip": "↔️ 可拖動卡片調整順序",
+
+  "common.button.deckReference": "📖 牌組參考",
+  "common.button.fetchDeck": "抓取牌組",
+  "common.button.print": "🖨️ 立即列印 (A4)",
+  "common.button.clearAll": "🗑️ 清空所有卡片",
+  "common.label.upload": "📂 點擊選擇 或 拖放圖片至此",
+  "common.placeholder.deckUrl": "貼上日本官網牌組網址 (https://www.pokemon-card.com/deck/result.html/deckID/...)",
+  "common.loading": "讀取中...",
+
+  "action.delete": "刪除",
+  "action.zoom": "放大",
+  "action.confirmClear": "確定清空所有卡片嗎？",
+
+  "error.rejectedItems": "無法載入 {0} 個卡片項目：資料格式錯誤",
+  "error.network": "網路回應不正常: {0}",
+  "error.noCardsFound": "無法在網頁中找到任何卡片資訊。",
+  "error.fetch": "發生錯誤，詳情請見 Console",
+  "error.imageLoad": "圖片載入失敗",
+  "error.enterUrl": "請輸入網址！",
+
+  "info.wasteAlert": "💡 <b>紙張利用提醒：</b> 最後一頁只有 {0} 張卡片，建議補 {1} 張卡片填滿紙張。",
+  "info.notEnoughCards": "⚠️ 注意：此牌組僅抓取到 {0} 張卡片，不足 60 張！",
+
+  "ui.pageNumber": "第 {0} 頁"
+}

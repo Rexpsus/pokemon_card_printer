@@ -1,0 +1,28 @@
+{
+  "title.page": "Card Print Layout Tool",
+  "title.sortTip": "↔️ Drag cards to reorder",
+
+  "common.button.deckReference": "📖 Deck Reference",
+  "common.button.fetchDeck": "Fetch Deck",
+  "common.button.print": "🖨️ Print Now (A4)",
+  "common.button.clearAll": "🗑️ Clear All Cards",
+  "common.label.upload": "📂 Click or drag images here",
+  "common.placeholder.deckUrl": "Paste Japanese official deck URL (https://www.pokemon-card.com/deck/result.html/deckID/...)",
+  "common.loading": "Loading...",
+
+  "action.delete": "Delete",
+  "action.zoom": "Zoom",
+  "action.confirmClear": "Are you sure you want to clear all cards?",
+
+  "error.rejectedItems": "Cannot load {0} card(s): invalid data format",
+  "error.network": "Network error: {0}",
+  "error.noCardsFound": "No card information found on this page.",
+  "error.fetch": "An error occurred. See Console for details.",
+  "error.imageLoad": "Image Load Error",
+  "error.enterUrl": "Please enter a URL!",
+
+  "info.wasteAlert": "💡 <b>Paper Usage Tip:</b> Last page only has {0} card(s). Add {1} more to fill.",
+  "info.notEnoughCards": "⚠️ Note: Only {0} card(s) fetched, less than 60!",
+
+  "ui.pageNumber": "Page {0}"
+}
