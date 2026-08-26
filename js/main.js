@@ -25,6 +25,11 @@ window.addEventListener('keydown', (e) => {
 // 牌組抓取按鈕
 document.getElementById('fetchBtn').onclick = fetchDeckData;
 
+// Pokecabook 牌組參考按鈕
+document.getElementById('pokecabookBtn').onclick = () => {
+  window.open('https://pokecabook.com/archives/category/deck-recipe', '_blank', 'noopener');
+};
+
 // 拖放上傳
 const dropZone = document.querySelector('.file-input-label');
 dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('dragover'); };

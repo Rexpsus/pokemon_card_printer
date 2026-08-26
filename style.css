@@ -157,6 +157,15 @@ header { margin: 10px 0 30px 0; }
 .btn:hover { box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15); }
 .btn:active { transform: scale(0.98); }
 
+.btn-info { background: #3b82f6; color: white; }
+.btn-info:hover { background: #2563eb; }
+.btn-info::after {
+  content: ''; position: absolute; top: -50%; left: -100%; width: 50%; height: 200%;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transform: rotate(30deg); transition: all 0.6s ease;
+}
+.btn-info:hover::after { left: 120%; }
+
 .btn-success { background: #10b981; color: white; }
 .btn-success::after {
   content: ''; position: absolute; top: -50%; left: -100%; width: 50%; height: 200%;
