@@ -1,10 +1,11 @@
 # 🃏 卡片列印排版工具 / Card Print Layout Tool
 
-[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live Demo-3b82f6)](https://rexpsus.github.io/pokemon_card_printer/)
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live%20Demo-3b82f6)](https://rexpsus.github.io/pokemon_card_printer/)
 [![JS: ES Modules](https://img.shields.io/badge/JS-ES%20Modules-gold)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
 [![i18n: zh-Hant / en / ja](https://img.shields.io/badge/i18n-zh--Hant%20%7C%20en%20%7C%20ja-blue)](./locales/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green)](./LICENSE)
 [![Deploy](https://github.com/Rexpsus/pokemon_card_printer/actions/workflows/deploy.yml/badge.svg)](https://github.com/Rexpsus/pokemon_card_printer/actions/workflows/deploy.yml)
+
 
 ---
 
