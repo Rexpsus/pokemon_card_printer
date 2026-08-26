@@ -1,0 +1,36 @@
+name: 自動部署 + Cache Busting
+
+on:
+  push:
+    branches: [main]
+
+# 允許 gh-pages 分支寫入
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout 原始碼
+        uses: actions/checkout@v4
+
+      - name: 🏷️ 注入版本號（Cache Busting）
+        run: |
+          HASH="${{ github.sha }}"
+          echo "Commit hash: $HASH"
+          # 在 style.css 後面加上 ?v=commit_hash
+          sed -i 's|href="style.css"|href="style.css?v='$HASH'"|g' index.html
+          # 在 js/main.js 後面加上 ?v=commit_hash
+          sed -i 's|src="js/main.js"|src="js/main.js?v='$HASH'"|g' index.html
+          # 確認注入成功
+          echo "=== 注入後的 index.html ==="
+          grep -E '(style\.css|main\.js)' index.html
+
+      - name: 🚀 部署到 gh-pages 分支
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          publish_branch: gh-pages
+          commit_message: 'Deploy ${{ github.sha }} (auto cache busting)'
