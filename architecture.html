@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>卡片列印排版工具 — 架構導覽圖</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --panel: #1e293b;
+    --surface: #334155;
+    --text: #f1f5f9;
+    --text-dim: #94a3b8;
+    --primary: #3b82f6;
+    --accent: #22d3ee;
+    --warn: #f59e0b;
+    --green: #22c55e;
+    --rose: #f43f5e;
+    --purple: #a78bfa;
+    --border: #334155;
+    --radius: 12px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 40px 20px;
+    min-height: 100vh;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+
+  header { text-align: center; margin-bottom: 50px; }
+  header h1 {
+    font-size: 2rem; font-weight: 700;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  header p { color: var(--text-dim); margin-top: 8px; font-size: 0.95rem; }
+
+  .section { margin-bottom: 48px; }
+  .section-title {
+    font-size: 1.25rem; font-weight: 600; margin-bottom: 20px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-title .badge {
+    font-size: 0.7rem; font-weight: 700; padding: 2px 10px;
+    border-radius: 20px; background: var(--primary); color: #fff;
+  }
+
+  .arch-grid { display: grid; gap: 20px; }
+  .arch-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  .arch-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .arch-grid.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 16px;
+    box-shadow: var(--shadow);
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(0,0,0,0.5); }
+  .card .label {
+    font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.5px; margin-bottom: 6px; color: var(--text-dim);
+  }
+  .card .title { font-size: 1rem; font-weight: 600; margin-bottom: 4px; }
+  .card .desc { font-size: 0.8rem; color: var(--text-dim); line-height: 1.5; }
+  .card .tag {
+    display: inline-block; font-size: 0.65rem; font-weight: 600;
+    padding: 2px 8px; border-radius: 10px; margin-top: 6px;
+  }
+  .tag-blue { background: rgba(59,130,246,0.2); color: var(--primary); }
+  .tag-cyan { background: rgba(34,211,238,0.2); color: var(--accent); }
+  .tag-green { background: rgba(34,197,94,0.2); color: var(--green); }
+  .tag-rose { background: rgba(244,63,94,0.2); color: var(--rose); }
+  .tag-purple { background: rgba(167,139,250,0.2); color: var(--purple); }
+  .tag-warn { background: rgba(245,158,11,0.2); color: var(--warn); }
+
+  .entry-card {
+    background: var(--panel);
+    border: 1px solid var(--primary);
+    text-align: center; padding: 24px;
+    max-width: 300px; margin: 0 auto 30px;
+    box-shadow: 0 0 24px rgba(59,130,246,0.15);
+  }
+  .entry-card .title { font-size: 1.3rem; color: var(--primary); }
+  .entry-card .desc { color: var(--text-dim); }
+
+  .arrow-down {
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; height: 28px;
+  }
+  .arrow-down .line { width: 2px; flex: 1; background: var(--surface); }
+  .arrow-down .head {
+    width: 0; height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid var(--surface);
+  }
+  .arrow-right {
+    display: flex; align-items: center; justify-content: center;
+    width: 28px; flex-shrink: 0;
+  }
+  .arrow-right .line { height: 2px; flex: 1; background: var(--surface); }
+  .arrow-right .head {
+    width: 0; height: 0;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-left: 6px solid var(--surface);
+  }
+  .arrow-left {
+    display: flex; align-items: center; justify-content: center;
+    width: 28px; flex-shrink: 0;
+  }
+  .arrow-left .line { height: 2px; flex: 1; background: var(--surface); }
+  .arrow-left .head {
+    width: 0; height: 0;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-right: 6px solid var(--surface);
+  }
+
+  .flow-row { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; }
+  .flow-row .card { flex: 0 0 auto; min-width: 120px; }
+  .flow-col { display: flex; flex-direction: column; align-items: center; }
+
+  .state-card {
+    border-color: var(--primary);
+    background: linear-gradient(135deg, var(--panel), rgba(59,130,246,0.08));
+  }
+  .state-card .title { color: var(--primary); }
+
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 16px; justify-content: center;
+    margin-bottom: 40px; padding: 16px 20px;
+    background: var(--panel); border-radius: var(--radius);
+    border: 1px solid var(--border);
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--text-dim); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  @media (max-width: 768px) {
+    .arch-grid.cols-2, .arch-grid.cols-3, .arch-grid.cols-4 { grid-template-columns: 1fr; }
+    .flow-row { flex-direction: column; }
+    .arrow-right { transform: rotate(90deg); }
+    .arrow-left { transform: rotate(90deg); }
+  }
+
+  .highlight-primary { border-left: 3px solid var(--primary); }
+  .highlight-accent { border-left: 3px solid var(--accent); }
+  .highlight-green { border-left: 3px solid var(--green); }
+  .highlight-rose { border-left: 3px solid var(--rose); }
+  .highlight-purple { border-left: 3px solid var(--purple); }
+  .highlight-warn { border-left: 3px solid var(--warn); }
+
+  .divider { height: 1px; background: var(--border); margin: 40px 0; width: 100%; }
+  .subtitle { font-size: 0.85rem; color: var(--text-dim); text-align: center; margin-bottom: 24px; }
+
+  code {
+    font-family: 'Cascadia Code', 'Fira Code', monospace;
+    font-size: 0.75rem;
+    background: rgba(255,255,255,0.06);
+    padding: 1px 5px; border-radius: 4px;
+    color: var(--accent);
+  }
+
+  .group-box {
+    border: 1px dashed var(--surface);
+    border-radius: var(--radius);
+    padding: 16px;
+    position: relative;
+    margin-top: 8px;
+  }
+  .group-box .group-label {
+    position: absolute; top: -10px; left: 16px;
+    background: var(--bg); padding: 0 8px;
+    font-size: 0.7rem; font-weight: 600;
+    color: var(--text-dim); text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>🏗️ 卡片列印排版工具 — 架構導覽圖</h1>
+    <p>純前端 · Vanilla JS (ES Modules) · 無框架 · 無後端</p>
+  </header>
+
+  <div class="legend">
+    <div class="legend-item"><span class="legend-dot" style="background:var(--primary)"></span> State 管理</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> UI 渲染</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--green)"></span> 外部資料</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--rose)"></span> 互動操作</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--purple)"></span> 工具函式</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--warn)"></span> 列印 / 輸出</div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!-- SECTION 1: 頁面結構 -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">
+      <span>📄 頁面結構</span>
+      <span class="badge">Entry & Module Loading</span>
+    </div>
+    <p class="subtitle">唯一入口 <code>index.html</code> 載入所有資源，無 bundler、無構建步驟</p>
+
+    <div class="flow-col">
+      <div class="card entry-card">
+        <div class="title">index.html</div>
+        <div class="desc">唯一入口 · <code>type="module"</code></div>
+        <span class="tag tag-blue">CDN: SortableJS 1.15.0</span>
+      </div>
+      <div class="arrow-down"><div class="line"></div><div class="head"></div></div>
+    </div>
+
+    <div class="arch-grid cols-4" style="margin-top:12px;">
+      <div class="card highlight-rose">
+        <div class="label">Entry Script</div>
+        <div class="title">main.js</div>
+        <div class="desc">初始化事件、SortableJS 綁定、主題 restore</div>
+        <span class="tag tag-rose">DOM 事件</span>
+      </div>
+      <div class="card highlight-accent">
+        <div class="label">Stylesheet</div>
+        <div class="title">style.css</div>
+        <div class="desc">全部樣式 · <code>@media print</code> · 深色主題</div>
+        <span class="tag tag-cyan">CSS Custom Properties</span>
+      </div>
+      <div class="card highlight-green">
+        <div class="label">Static Assets</div>
+        <div class="title">cards/</div>
+        <div class="desc">範例圖片目錄 (<code>1.jpg ~ 6.jpg</code>)</div>
+        <span class="tag tag-green">靜態資源</span>
+      </div>
+      <div class="card highlight-purple">
+        <div class="label">External Lib</div>
+        <div class="title">SortableJS</div>
+        <div class="desc">CDN 載入 · 拖曳排序 · <code>onEnd</code> 回呼</div>
+        <span class="tag tag-purple">CDN</span>
+      </div>
+    </div>
+
+    <!-- Module Dependency Chain (放射狀：state.js 為核心) -->
+    <div style="margin-top:24px;">
+      <div class="group-box">
+        <div class="group-label">JS Module 依賴關係（直接 import）</div>
+        <div style="margin-top:12px;text-align:center;">
+          <div class="card state-card" style="display:inline-block;min-width:100px;text-align:center;margin-bottom:8px;">
+            <div class="title" style="font-size:0.9rem;">state.js</div>
+            <div class="desc" style="font-size:0.7rem;">被所有模組直接 import</div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:12px;">
+            <div class="flow-col">
+              <div class="arrow-down" style="height:16px;"><div class="line"></div><div class="head"></div></div>
+              <div class="card" style="min-width:90px;text-align:center;">
+                <div class="title" style="font-size:0.8rem;">main.js</div>
+                <div class="desc" style="font-size:0.65rem;">+ preview, carousel, deckFetcher, lightbox</div>
+              </div>
+            </div>
+            <div class="flow-col">
+              <div class="arrow-down" style="height:16px;"><div class="line"></div><div class="head"></div></div>
+              <div class="card" style="min-width:90px;text-align:center;">
+                <div class="title" style="font-size:0.8rem;">preview.js</div>
+                <div class="desc" style="font-size:0.65rem;">+ lightbox, carousel</div>
+              </div>
+            </div>
+            <div class="flow-col">
+              <div class="arrow-down" style="height:16px;"><div class="line"></div><div class="head"></div></div>
+              <div class="card" style="min-width:90px;text-align:center;">
+                <div class="title" style="font-size:0.8rem;">carousel.js</div>
+                <div class="desc" style="font-size:0.65rem;">僅 state.js</div>
+              </div>
+            </div>
+            <div class="flow-col">
+              <div class="arrow-down" style="height:16px;"><div class="line"></div><div class="head"></div></div>
+              <div class="card" style="min-width:90px;text-align:center;">
+                <div class="title" style="font-size:0.8rem;">deckFetcher.js</div>
+                <div class="desc" style="font-size:0.65rem;">僅 state.js（不經 preview）</div>
+              </div>
+            </div>
+            <div class="flow-col">
+              <div class="arrow-down" style="height:16px;"><div class="line"></div><div class="head"></div></div>
+              <div class="card" style="min-width:90px;text-align:center;">
+                <div class="title" style="font-size:0.8rem;">lightbox.js</div>
+                <div class="desc" style="font-size:0.65rem;">無外部依賴</div>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:8px;font-size:0.7rem;color:var(--text-dim);text-align:center;">
+            ⚠️ preview.js 另透過 subscribe(fn) 訂閱、refreshStatus() 呼叫 generateCarousel() — 均為 function call，非 import 依賴
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!-- SECTION 2: 共用元件 -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">
+      <span>🧩 共用元件</span>
+      <span class="badge">Modules & Responsibilities</span>
+    </div>
+
+    <div class="arch-grid cols-3">
+      <div class="card state-card">
+        <div class="label">State 管理層</div>
+        <div class="title">state.js</div>
+        <div class="desc" style="margin-top:6px;">
+          封閉式封裝 · module-scoped <code>_filesArray</code> 不直接 export
+        </div>
+        <div style="margin-top:10px;font-size:0.8rem;">
+          <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;">
+            <span class="tag tag-blue">getFilesArray()</span>
+            <span class="tag tag-blue">addFiles()</span>
+            <span class="tag tag-blue">removeFile()</span>
+            <span class="tag tag-blue">updateQuantity()</span>
+            <span class="tag tag-blue">setFilesArray()</span>
+            <span class="tag tag-blue">subscribe()</span>
+            <span class="tag tag-blue">getAndClearRejectedItems()</span>
+          </div>
+          <div style="color:var(--text-dim);font-size:0.75rem;">
+            ⚡ Mutable export: <code>scrollX</code>, <code>isAccelerating</code>, <code>loopWidth</code>, <code>isHovering</code><br>
+            🔧 Setter: <code>setScrollX()</code>, <code>setIsAccelerating()</code>, <code>setLoopWidth()</code>, <code>setIsHovering()</code>
+          </div>
+        </div>
+      </div>
+
+      <div class="card highlight-accent">
+        <div class="label">UI 渲染</div>
+        <div class="title">preview.js</div>
+        <div class="desc">預覽區渲染 · 上傳檔案處理 · 廢紙提醒</div>
+        <div style="margin-top:8px;font-size:0.8rem;">
+          <span class="tag tag-cyan">renderPreview()</span>
+          <span class="tag tag-cyan">handleFiles()</span>
+          <span class="tag tag-cyan">refreshStatus()</span>
+          <span class="tag tag-cyan">showToast()</span>
+        </div>
+        <div style="margin-top:6px;font-size:0.7rem;color:var(--text-dim);">
+          ⚠️ <code>renderPreview()</code> 已標記 @deprecated，由 subscribe 自動觸發<br>
+          📢 <code>refreshStatus()</code> 計算總張數 mod 9，顯示廢紙提醒，再呼叫 <code>generateCarousel()</code>
+        </div>
+      </div>
+
+      <div class="card highlight-accent">
+        <div class="label">UI 渲染</div>
+        <div class="title">carousel.js</div>
+        <div class="desc">A4 列印預覽輪播 · 無限滾動動畫 (rAF)</div>
+        <div style="margin-top:8px;font-size:0.8rem;">
+          <span class="tag tag-cyan">generateCarousel()</span>
+          <span class="tag tag-cyan">scrollAnimate()</span>
+          <span class="tag tag-cyan">setupNav()</span>
+        </div>
+        <div style="margin-top:6px;font-size:0.7rem;color:var(--text-dim);">
+          🎞️ rAF loop · 自動慢速左移 / 按住加速 · 回繞機制
+        </div>
+      </div>
+
+      <div class="card highlight-green">
+        <div class="label">外部資料</div>
+        <div class="title">deckFetcher.js</div>
+        <div class="desc">抓取日本 Pokémon 官網牌組</div>
+        <div style="margin-top:8px;font-size:0.8rem;">
+          <span class="tag tag-green">fetchDeckData()</span>
+        </div>
+        <div style="margin-top:6px;font-size:0.7rem;color:var(--text-dim);">
+          ⚠️ 依賴官網 HTML 結構 (regex 解析)，改版即 break
+        </div>
+      </div>
+
+      <div class="card highlight-purple">
+        <div class="label">工具函式</div>
+        <div class="title">lightbox.js</div>
+        <div class="desc">燈箱放大檢視卡片</div>
+        <div style="margin-top:8px;font-size:0.8rem;">
+          <span class="tag tag-purple">openLightbox(url)</span>
+          <span class="tag tag-purple">closeLightbox()</span>
+        </div>
+      </div>
+
+      <div class="card highlight-warn">
+        <div class="label">持久化</div>
+        <div class="title">localStorage</div>
+        <div class="desc">主題偏好儲存</div>
+        <div style="margin-top:8px;font-size:0.8rem;">
+          <span class="tag tag-warn">key: card-theme</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!-- SECTION 3: Data Flow -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">
+      <span>🔀 資料流</span>
+      <span class="badge">Data Flow</span>
+    </div>
+
+    <!-- Path 1: Upload -->
+    <div style="margin-bottom:32px;">
+      <div style="font-size:0.9rem;font-weight:600;margin-bottom:12px;color:var(--accent);">
+        📤 路徑一：上傳圖片
+      </div>
+      <div class="flow-row">
+        <div class="card highlight-rose" style="text-align:center;">
+          <div class="title" style="font-size:0.85rem;">使用者上傳</div>
+          <div class="desc"><code>FileList</code></div>
+        </div>
+        <div class="arrow-right"><div class="line"></div><div class="head"></div></div>
+        <div class="card highlight-rose" style="text-align:center;">
+          <div class="title" style="font-size:0.85rem;">handleFiles()</div>
+          <div class="desc"><code>URL.createObjectURL</code></div>
+        </div>
+        <div class="arrow-right"><div class="line"></div><div class="head"></div></div>
+        <div class="card state-card" style="text-align:center;">
+          <div class="title" style="font-size:0.85rem;">addFiles()</div>
+          <div class="desc"><code>{ id, url, quantity }</code></div>
+        </div>
+        <div class="arrow-right"><div class="line"></div><div class="head"></div></div>
+        <div class="card highlight-accent" style="text-align:center;">
+          <div class="title" style="font-size:0.85rem;">renderPreview()</div>
+          <div class="desc">subscribe 自動觸發</div>
+        </div>
+        <div class="arrow-right"><div class="line"></div><div class="head"></div></div>
+        <div class="card highlight-accent" style="text-align:center;">
+          <div class="title" style="font-size:0.85rem;">generateCarousel()</div>
+          <div class="desc">refreshStatus 觸發</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Path 2: Deck Fetch -->
+    <div style="margin-bottom:32px;">
+      <div style="font-size:0.9rem;font-weight:600;margin-bottom:12px;color:var(--green);">
+        🌐 路徑二：輸入牌組網址
+      </div>
+      <div class="flow-row">
+        <div class="card highlight-rose" style="text-align:center;">
+          <div class="title" style="font-size:0.85rem;">輸入 URL</div>
+          <div class="desc">日本官網牌組</div>
+        </div>
+        <div class="arrow-right"><div class="line"></div><div class="head"></div></div>
+        <div class="card highlight-green" style="text-align:center;">
+          <div class="title" style="font-size:0.85rem;">fetchDeckData()</div>
+          <div class="desc">fetch → regex 解析</div>
+        </div>
+        <div class="arrow-right"><div class="line"></div><div class="head"></div></div>
+        <div class="card state-card" style="text-align:center;">
+          <div class="title" style="font-size:0.85rem;">setFilesArray()</div>
+          <div class="desc"><code>{ id: 'ptcg-...' }</code></div>
+        </div>
+        <div class="arrow-right"><div class="line"></div><div class="head"></div></div>
+        <div class="card highlight-accent" style="text-align:center;">
+          <div class="title" style="font-size:0.85rem;">renderPreview()</div>
+          <div class="desc">subscribe 自動觸發</div>
+        </div>
+        <div class="arrow-right"><div class="line"></div><div class="head"></div></div>
+        <div class="card highlight-accent" style="text-align:center;">
+          <div class="title" style="font-size:0.85rem;">generateCarousel()</div>
+          <div class="desc">refreshStatus 觸發</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Path 3: Drag & Sort -->
+    <div style="margin-bottom:32px;">
+      <div style="font-size:0.9rem;font-weight:600;margin-bottom:12px;color:var(--rose);">
+        🔄 路徑三：拖曳排序
+      </div>
+      <div class="flow-row">
+        <div class="card highlight-rose" style="text-align:center;">
+          <div class="title" style="font-size:0.85rem;">拖曳卡片</div>
+          <div class="desc">SortableJS</div>
+        </div>
+        <div class="arrow-right"><div class="line"></div><div class="head"></div></div>
+        <div class="card highlight-rose" style="text-align:center;">
+          <div class="title" style="font-size:0.85rem;">onEnd 回呼</div>
+          <div class="desc">讀取 DOM 順序</div>
+        </div>
+        <div class="arrow-right"><div class="line"></div><div class="head"></div></div>
+        <div class="card state-card" style="text-align:center;">
+          <div class="title" style="font-size:0.85rem;">setFilesArray()</div>
+          <div class="desc">重新排序</div>
+        </div>
+        <div class="arrow-right"><div class="line"></div><div class="head"></div></div>
+        <div class="card highlight-accent" style="text-align:center;">
+          <div class="title" style="font-size:0.85rem;">renderPreview()</div>
+          <div class="desc">subscribe 自動觸發</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Print Flow -->
+    <div>
+      <div style="font-size:0.9rem;font-weight:600;margin-bottom:12px;color:var(--warn);">
+        🖨️ 列印流程
+      </div>
+      <div class="flow-row">
+        <div class="card highlight-rose" style="text-align:center;">
+          <div class="title" style="font-size:0.85rem;">點擊列印</div>
+        </div>
+        <div class="arrow-right"><div class="line"></div><div class="head"></div></div>
+        <div class="card highlight-warn" style="text-align:center;">
+          <div class="title" style="font-size:0.85rem;">window.print()</div>
+        </div>
+        <div class="arrow-right"><div class="line"></div><div class="head"></div></div>
+        <div class="card highlight-warn" style="text-align:center;">
+          <div class="title" style="font-size:0.85rem;">@media print</div>
+          <div class="desc">隱藏 UI · sheet 全頁 · page-break-after</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!-- SECTION 4: State 管理細節 -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">
+      <span>⚙️ State 管理細節</span>
+      <span class="badge">state.js 內部機制</span>
+    </div>
+
+    <div class="arch-grid cols-2">
+      <div class="card state-card">
+        <div class="label">核心資料</div>
+        <div class="title">_filesArray</div>
+        <div class="desc" style="margin-top:6px;">
+          Module-scoped 陣列，不直接 export，防止外部 mutation
+        </div>
+        <div style="margin-top:10px;padding:10px;background:rgba(0,0,0,0.2);border-radius:8px;font-family:monospace;font-size:0.75rem;color:var(--accent);">
+          [<br>
+          &nbsp;&nbsp;{ id: "f-1723456789", url: "blob:...", quantity: 1 },<br>
+          &nbsp;&nbsp;{ id: "ptcg-047878-abc", url: "https://...", quantity: 3 },<br>
+          &nbsp;&nbsp;...<br>
+          ]
+        </div>
+      </div>
+
+      <div class="card state-card">
+        <div class="label">寫入操作（統一經由 _setFilesArray）</div>
+        <div class="title">資料驗證閘道</div>
+        <div style="margin-top:8px;font-size:0.8rem;">
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div><span class="tag tag-blue">addFiles(items)</span> — id 重複自動重新生成</div>
+            <div><span class="tag tag-blue">updateQuantity(id, qty)</span> — 自動 clamp 1~99</div>
+            <div><span class="tag tag-blue">removeFile(id)</span> — 刪除卡片（blob revoke 由 UI 層處理）</div>
+            <div><span class="tag tag-blue">setFilesArray(arr)</span> — 向後相容，仍經驗證</div>
+            <div><span class="tag tag-blue">getAndClearRejectedItems()</span> — 取得被過濾的無效項目</div>
+          </div>
+        </div>
+        <div style="margin-top:10px;font-size:0.7rem;color:var(--text-dim);">
+          🔒 所有寫入皆經型別驗證、數量 clamp、無效項目過濾
+        </div>
+      </div>
+
+      <div class="card state-card">
+        <div class="label">訂閱機制</div>
+        <div class="title">subscribe(fn)</div>
+        <div class="desc" style="margin-top:6px;">
+          狀態變更時通知所有 subscriber，回傳取消訂閱函式
+        </div>
+        <div style="margin-top:8px;font-size:0.8rem;">
+          <span class="tag tag-blue">subscribe(fn)</span>
+          <span class="tag tag-rose">→ renderPreview()</span>
+          <span class="tag tag-rose">→ generateCarousel()</span>
+        </div>
+        <div style="margin-top:6px;font-size:0.7rem;color:var(--text-dim);">
+          ⚠️ 取消訂閱函式應在元件卸載時呼叫，避免 listener 洩漏
+        </div>
+      </div>
+
+      <div class="card state-card">
+        <div class="label">Mutable Export（高效讀取）</div>
+        <div class="title">輪播動畫狀態</div>
+        <div style="margin-top:8px;font-size:0.8rem;">
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <div><code>scrollX</code> — 目前滾動位置</div>
+            <div><code>isAccelerating</code> — 是否按住加速</div>
+            <div><code>loopWidth</code> — 單份內容寬度</div>
+            <div><code>isHovering</code> — 滑鼠懸浮</div>
+          </div>
+        </div>
+        <div style="margin-top:6px;font-size:0.7rem;color:var(--text-dim);">
+          🎯 供 rAF loop 高效讀取，不經 getter
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!-- SECTION 5: 輪播動畫細節 -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">
+      <span>🎞️ 輪播動畫機制</span>
+      <span class="badge">carousel.js 內部</span>
+    </div>
+
+    <div class="arch-grid cols-3">
+      <div class="card highlight-accent">
+        <div class="label">Step 1</div>
+        <div class="title">generateCarousel()</div>
+        <div class="desc">展開 quantity → 平面 URL 陣列 → 每 9 張為一頁 (sheet)</div>
+        <div style="margin-top:8px;font-size:0.75rem;color:var(--text-dim);">
+          內容寬度 > container → 啟用輪播 + 複製 clones × 2<br>
+          否則置中靜態顯示（廢紙提醒由 <code>refreshStatus()</code> 負責）
+        </div>
+      </div>
+
+      <div class="card highlight-accent">
+        <div class="label">Step 2</div>
+        <div class="title">scrollAnimate()</div>
+        <div class="desc">requestAnimationFrame loop</div>
+        <div style="margin-top:8px;font-size:0.75rem;color:var(--text-dim);">
+          每幀 <code>scrollX += -0.8</code> (自動) 或 <code>±18</code> (按住按鈕)
+        </div>
+      </div>
+
+      <div class="card highlight-accent">
+        <div class="label">Step 3</div>
+        <div class="title">回繞機制</div>
+        <div class="desc">
+          左邊界：<code>scrollX <= -loopWidth×2</code> → <code>+loopWidth</code><br>
+          右邊界：<code>scrollX >= 0</code> → <code>-loopWidth</code>
+        </div>
+        <div style="margin-top:8px;font-size:0.75rem;color:var(--text-dim);">
+          🔄 clones 數量 = 2 份（原始 + 2 份 clone = 3 倍）
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!-- SECTION 6: 開發規範 -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">
+      <span>📐 開發規範</span>
+      <span class="badge">Conventions</span>
+    </div>
+
+    <div class="arch-grid cols-2">
+      <div class="card">
+        <div class="label">命名規則</div>
+        <div style="margin-top:8px;font-size:0.8rem;">
+          <table style="width:100%;border-collapse:collapse;">
+            <tr><td style="padding:4px 8px;color:var(--text-dim);">資料夾</td><td style="padding:4px 8px;"><code>小寫</code></td><td style="padding:4px 8px;color:var(--text-dim);"><code>js/</code>, <code>cards/</code></td></tr>
+            <tr><td style="padding:4px 8px;color:var(--text-dim);">JS 檔案</td><td style="padding:4px 8px;"><code>camelCase</code></td><td style="padding:4px 8px;color:var(--text-dim);"><code>deckFetcher.js</code></td></tr>
+            <tr><td style="padding:4px 8px;color:var(--text-dim);">函式</td><td style="padding:4px 8px;"><code>camelCase</code></td><td style="padding:4px 8px;color:var(--text-dim);"><code>fetchDeckData()</code></td></tr>
+            <tr><td style="padding:4px 8px;color:var(--text-dim);">DOM id</td><td style="padding:4px 8px;"><code>camelCase / kebab</code></td><td style="padding:4px 8px;color:var(--text-dim);"><code>themeToggle</code></td></tr>
+            <tr><td style="padding:4px 8px;color:var(--text-dim);">CSS class</td><td style="padding:4px 8px;"><code>kebab-case</code></td><td style="padding:4px 8px;color:var(--text-dim);"><code>preview-item</code></td></tr>
+            <tr><td style="padding:4px 8px;color:var(--text-dim);">id prefix</td><td style="padding:4px 8px;"><code>f-</code> / <code>ptcg-</code></td><td style="padding:4px 8px;color:var(--text-dim);">本機 / 牌組</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="label">禁止事項</div>
+        <div style="margin-top:8px;font-size:0.8rem;">
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:6px;">
+            <li>🚫 TypeScript / JSX / Babel</li>
+            <li>🚫 npm 套件 / node_modules</li>
+            <li>🚫 jQuery 或 DOM 框架</li>
+            <li>🚫 修改 state.js 為 reactive / Proxy</li>
+            <li>🚫 依賴列印精確尺寸（非 @media print）</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card" style="grid-column:1/-1;">
+        <div class="label">注意事項</div>
+        <div style="margin-top:8px;font-size:0.8rem;display:flex;flex-wrap:wrap;gap:8px;">
+          <span class="tag tag-warn">刪除卡片須手動 URL.revokeObjectURL</span>
+          <span class="tag tag-warn">getFilesArray() 回傳 shallow copy</span>
+          <span class="tag tag-warn">subscribe() 取消函式應在卸載時呼叫</span>
+          <span class="tag tag-warn">deckFetcher 依賴官網 HTML 結構</span>
+          <span class="tag tag-warn">輪播 clones = 2 份</span>
+          <span class="tag tag-warn">getFilesArray() 每次回傳新陣列</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer style="text-align:center;padding:30px 0 10px;border-top:1px solid var(--border);margin-top:20px;">
+    <p style="font-size:0.8rem;color:var(--text-dim);">
+      卡片列印排版工具 · Architecture Overview · 純 Vanilla JS · 無後端 · 無框架
+    </p>
+  </footer>
+
+</div>
+</body>
+</html>

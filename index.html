@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>卡片列印排版工具</title>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <div class="header-actions">
+    <button id="themeToggle">🌓</button>
+  </div>
+
+  <header><h2>卡片列印排版工具</h2></header>
+
+  <div class="controls" id="controlPanel">
+	<div class="deck-import-group" style="margin-bottom: 20px; display: flex; gap: 10px;">
+	  <input type="text" id="deckUrl" placeholder="貼上日本官網牌組網址 (deckID/...)" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--panel-bg); color: var(--text-primary);">
+	  <button class="btn btn-success" id="fetchBtn" style="white-space: nowrap;">抓取牌組</button>
+	</div>
+    <div id="drop-area">
+      <label for="fileInput" class="file-input-label">
+        <span>📂</span>
+        <span>點擊選擇 或 拖放圖片至此</span>
+      </label>
+      <input type="file" id="fileInput" accept="image/*" multiple style="display:none;">
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-success" id="printBtn" style="display:none;">立即列印 (A4)</button>
+      <div style="flex:1;"></div>
+      <button class="btn btn-danger" id="clearAllBtn" style="display:none;">清空所有卡片</button>
+    </div>
+  </div>
+
+  <div class="info-bar">
+    <div class="alert-box">
+      <div class="alert-container" id="alert-wrapper"><div id="waste-alert"></div></div>
+    </div>
+    <div id="ui-sort-tip"><span>↔️</span><span>可拖動卡片調整順序</span></div>
+    <div id="toast-container"></div>
+  </div>
+
+  <div id="preview" class="preview"></div>
+
+  <div class="carousel-wrapper" id="carousel">
+    <button class="nav-btn btn-left" id="scrollLeftBtn"><span class="btn-icon">▲</span></button>
+    <div class="carousel-container"><div id="printArea"></div></div>
+    <button class="nav-btn btn-right" id="scrollRightBtn"><span class="btn-icon">▲</span></button>
+  </div>
+</div>
+
+<button id="backToTop"><span class="btn-icon">▲</span></button>
+
+<div id="imgModal">
+  <span class="modal-close">✕</span>
+  <img src="" id="modalImg" alt="Preview">
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
