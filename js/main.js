@@ -3,7 +3,7 @@ import { getFilesArray, setFilesArray, setIsHovering } from './state.js';
 import { closeLightbox } from './lightbox.js';
 import { fetchDeckData } from './deckFetcher.js';
 import { handleFiles } from './preview.js';
-import { scrollAnimate, setupNav } from './carousel.js';
+import { initCarousel, setupNav, pauseCarousel, resumeCarousel } from './carousel.js';
 import { initI18n, setLanguage, t } from './i18n.js';
 
 // 按鈕圖示旋轉
@@ -102,5 +102,8 @@ document.getElementById('themeToggle').onclick = () => {
   localStorage.setItem('card-theme', t);
 };
 
-// 啟動輪播動畫
-scrollAnimate();
+// 啟動輪播動畫（需要時才跑；網址加 ?noscroll 可停用）
+initCarousel();
+
+// Console 除錯用：carousel.pause() / carousel.resume()
+window.carousel = { pause: pauseCarousel, resume: resumeCarousel };
