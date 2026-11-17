@@ -24,5 +24,7 @@
   "info.wasteAlert": "💡 <b>Paper Usage Tip:</b> Last page only has {0} card(s). Add {1} more to fill.",
   "info.notEnoughCards": "⚠️ Note: Only {0} card(s) fetched, less than 60!",
 
+  "print.hint": "🖨️ Print settings: A4, Margins: None, Scale: 100% (not Fit to page). Use the marks in the paper margins to align your cuts.",
+
   "ui.pageNumber": "Page {0}"
 }
