@@ -221,15 +221,19 @@ header { margin: 10px 0 30px 0; }
   }
   .carousel-wrapper.has-scroll::before { left: 8px; }
   .carousel-wrapper.has-scroll::after { right: 8px; }
-  .sheet {
-    width: 220px;
-    padding: 5mm;
-  }
 }
 
 .page-number { position: absolute; bottom: 10px; right: 15px; padding: 5px 12px; border-radius: 10px; background: var(--primary-color); color: white; font-size: 11px; font-weight: bold; }
 
-.sheet { flex: 0 0 auto; background: white; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, auto); align-content: center; width: 280px; aspect-ratio: 210 / 297; padding: 8mm; border: 1px solid #eee; position: relative; box-shadow: var(--neon-shadow); }
+.sheet { flex: 0 0 auto; background: white; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, auto); align-content: start; width: 280px; aspect-ratio: 210 / 297; padding: 5.79mm 3.7mm; border: 1px solid #eee; position: relative; box-shadow: var(--neon-shadow); }
+
+/* 手機：紙面縮成 220px，留白同樣依列印比例縮放（10.5mm→2.91mm、16.4mm→4.55mm） */
+@media (max-width: 640px) {
+  .sheet {
+    width: 220px;
+    padding: 4.55mm 2.91mm;
+  }
+}
 
 /* 卡片：固定 63:88 實卡比例，圖片完整顯示不裁切 */
 .card { position: relative; width: 100%; aspect-ratio: 63 / 88; align-self: center; justify-self: center; overflow: hidden; background: #fff; }
